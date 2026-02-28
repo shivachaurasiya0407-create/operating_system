@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operating System UI</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #f1f5f9;
+            --accent-color: #10b981;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --text-color: #1e293b;
+            --bg-color: #1d1d1f;
+            --border-color: #e2e8f0;
+            --card-bg: #ffffff;
+            --sidebar-bg: #e2e8f0;
+            --content-bg: #f1f5f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-color: var(--bg-color); */
+            background-color: #1d1d1f;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .brand {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Main Layout */
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--secondary-color);
+            border-right: 1px solid var(--border-color);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sidebar h3 {
+            margin-top: 0;
+            font-size: 1rem;
+            text-transform: uppercase;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-list li {
+            margin-bottom: 10px;
+        }
+
+        .nav-list a {
+            text-decoration: none;
+            color: var(--text-color);
+            display: block;
+            padding: 8px 12px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-list a:hover {
+            background-color: #ddfac8;
+        }
+
+        .nav-list a.active {
+            background-color: var(--primary-color);
+            color: rgb(216, 244, 204);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: var(--content-bg);
+        }
+
+        .content h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        /* Status Display */
+        .status-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        /* Hidden by default */
+        .hidden {
+            display: none;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary-color);
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="brand">Operating System Manager</div>
+        <div class="user-info">
+            <span id="current-time"></span>
+            <span id="user-name">User</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <h3>Control Panel</h3>
+            <ul class="nav-list">
+                <li><a href="#" class="nav-link active" data-section="dashboard">Dashboard</a></li>
+                <li><a href="#" class="nav-link" data-section="control-panel">Control Panel</a></li>
+                <li><a href="#" class="nav-link" data-section="file-management">File Management</a></li>
+                <li><a href="#" class="nav-link" data-section="system-info">System Info</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section">
+                <h1>System Dashboard</h1>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Storage</h3>
+                        <p>Monitor disk usage and capacity</p>
+                        <button class="btn" onclick="showSection('control-panel')">Manage Storage</button>
+                    </div>
+                    <div class="card">
+                        <h3>Files</h3>
+                        <p>Create and manage files</p>
+                        <button class="btn" onclick="showSection('file-management')">Create File</button>
+                    </div>
+                    <div class="card">
+                        <h3>Applications</h3>
+                        <p>Launch installed applications</p>
+                        <button class="btn" onclick="launchApp()">Open Apps</button>
+                    </div>
+                    <div class="card">
+                        <h3>System</h3>
+                        <p>View system information</p>
+                        <button class="btn" onclick="showSection('system-info')">System Info</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Control Panel Section -->
+            <section id="control-panel" class="section hidden">
+                <h1>Control Panel</h1>
+                
+                <div class="status-box">
+                    <h3>User Account</h3>
+                    <div class="status-item">
+                        <span>Username:</span>
+                        <span id="display-name">User</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Change Name</h3>
+                        <form onsubmit="changeName(event)">
+                            <div class="form-group">
+                                <label for="new-name">New Name:</label>
+                                <input type="text" id="new-name" required>
+                            </div>
+                            <button type="submit" class="btn">Update Name</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Change Password</h3>
+                        <form onsubmit="changePassword(event)">
+                            <div class="form-group">
+                                <label for="new-password">New Password:</label>
+                                <input type="password" id="new-password" required>
+                            </div>
+                            <button type="submit" class="btn">Update Password</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3>Date & Time</h3>
+                        <div class="status-item">
+                            <span>Current Date:</span>
+                            <span id="current-date"></span>
+                        </div>
+                        <div class="status-item">
+                            <span>Current Time:</span>
+                            <span id="current-time-display"></span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Storage Info</h3>
+                        <div class="form-group">
+                            <label for="drive-select">Select Drive:</label>
+                            <select id="drive-select">
+                                <option value="C">C:</option>
+                                <option value="D">D:</option>
+                                <option value="E">E:</option>
+                            </select>
+                        </div>
+                        <button class="btn" onclick="checkStorage()">Check Storage</button>
+                        <div id="storage-info" class="status-box" style="margin-top: 10px; display: none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- File Management Section -->
+            <section id="file-management" class="section hidden">
+                <h1>File Management</h1>
+                
+                <div class="card">
+                    <h3>Create New File</h3>
+                    <form onsubmit="createFile(event)">
+                        <div class="form-group">
+                            <label for="file-name">File Name (with extension):</label>
+                            <input type="text" id="file-name" placeholder="example.txt" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="file-content">File Content:</label>
+                            <textarea id="file-content" rows="5" class="form-group input" placeholder="Enter file content..."></textarea>
+                        </div>
+                        <button type="submit" class="btn">Create File</button>
+                        <button type="button" class="btn btn-secondary" onclick="showSection('dashboard')">Cancel</button>
+                    </form>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>This PC</h3>
+                        <p>Access drives and storage</p>
+                        <button class="btn" onclick="checkStorage()">View Storage</button>
+                    </div>
+                    <div class="card">
+                        <h3>Documents</h3>
+                        <p>Manage documents</p>
+                        <button class="btn">Open Documents</button>
+                    </div>
+                    <div class="card">
+                        <h3>Desktop</h3>
+                        <p>Desktop applications</p>
+                        <button class="btn" onclick="launchApp()">Launch Apps</button>
+                    </div>
+                    <div class="card">
+                        <h3>Downloads</h3>
+                        <p>Downloaded files</p>
+                        <button class="btn">View Downloads</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- System Info Section -->
+            <section id="system-info" class="section hidden">
+                <h1>System Information</h1>
+                
+                <div class="status-box">
+                    <h3>Memory Information</h3>
+                    <div class="status-item">
+                        <span>Total RAM:</span>
+                        <span id="ram-info">Calculating...</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>System Details</h3>
+                        <div class="status-item">
+                            <span>OS:</span>
+                            <span>Windows</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Architecture:</span>
+                            <span>64-bit</span>
+                        </div>
+                        <div class="status-item">
+                            <span>Processor:</span>
+                            <span id="processor-info">Unknown</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>Network Status</h3>
+                        <div class="status-item">
+                            <span>Connection:</span>
+                            <span id="network-status">Checking...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        Operating System Manager &copy; 2024 | Built with HTML, CSS, and JavaScript
+    </footer>
+
+    <script>
+        // State management
+        let currentUser = {
+            name: "User",
+            password: "1234"
+        };
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTime();
+            setInterval(updateTime, 1000);
+            setupNavigation();
+            checkSystemInfo();
+        });
+
+        // Navigation
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const section = e.target.getAttribute('data-section');
+                    showSection(section);
+                    
+                    // Update active state
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            // Show selected section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+        }
+
+        // Time and Date
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const dateString = now.toLocaleDateString();
+            
+            document.getElementById('current-time').textContent = timeString;
+            document.getElementById('current-time-display').textContent = timeString;
+            document.getElementById('current-date').textContent = dateString;
+        }
+
+        // User Management
+        function changeName(event) {
+            event.preventDefault();
+            const newName = document.getElementById('new-name').value.trim();
+            if (newName) {
+                currentUser.name = newName;
+                document.getElementById('user-name').textContent = newName;
+                document.getElementById('display-name').textContent = newName;
+                alert('Name updated successfully!');
+                document.getElementById('new-name').value = '';
+            }
+        }
+
+        function changePassword(event) {
+            event.preventDefault();
+            const newPassword = document.getElementById('new-password').value;
+            if (newPassword) {
+                currentUser.password = newPassword;
+                alert('Password updated successfully!');
+                document.getElementById('new-password').value = '';
+            }
+        }
+
+        // Storage Management
+        function checkStorage() {
+            const drive = document.getElementById('drive-select').value;
+            const storageInfo = document.getElementById('storage-info');
+            
+            // Simulate storage check (in real app, this would use actual system calls)
+            const totalGB = Math.floor(Math.random() * 500) + 100;
+            const freeGB = Math.floor(Math.random() * 200) + 50;
+            const availableGB = freeGB - 10;
+
+            storageInfo.innerHTML = `
+                <h4>Storage Information for ${drive}:</h4>
+                <div class="status-item">
+                    <span>Total Capacity:</span>
+                    <span>${totalGB} GB</span>
+                </div>
+                <div class="status-item">
+                    <span>Free Space:</span>
+                    <span>${freeGB} GB</span>
+                </div>
+                <div class="status-item">
+                    <span>Available Space:</span>
+                    <span>${availableGB} GB</span>
+                </div>
+            `;
+            storageInfo.style.display = 'block';
+        }
+
+        // File Management
+        function createFile(event) {
+            event.preventDefault();
+            const fileName = document.getElementById('file-name').value.trim();
+            const fileContent = document.getElementById('file-content').value;
+            
+            if (fileName && fileContent) {
+                // In a real application, this would save to the actual file system
+                // For this demo, we'll simulate the action
+                alert(`File "${fileName}" created successfully!\n\nContent:\n${fileContent}`);
+                
+                // Clear form
+                document.getElementById('file-name').value = '';
+                document.getElementById('file-content').value = '';
+            }
+        }
+
+        // Application Launcher
+        function launchApp() {
+            const apps = [
+                { name: 'Python', url: 'python.exe' },
+                { name: 'Chrome', url: 'chrome.exe' },
+                { name: 'YouTube', url: 'https://www.youtube.com' },
+                { name: 'Email', url: 'https://www.gmail.com' },
+                { name: 'Command Prompt', url: 'cmd.exe' }
+            ];
+
+            const appList = apps.map(app => 
+                `<button class="btn" style="margin: 5px;" onclick="openApp('${app.url}')">${app.name}</button>`
+            ).join('');
+
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = `
+                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <h3>Available Applications</h3>
+                    ${appList}
+                    <br>
+                    <button class="btn btn-secondary" onclick="this.parentElement.parentElement.remove()">Close</button>
+                </div>
+            `;
+
+            document.body.appendChild(tempDiv);
+        }
+
+        function openApp(url) {
+            if (url.startsWith('http')) {
+                window.open(url, '_blank');
+            } else {
+                // For local applications, attempt to launch using different methods
+                try {
+                    // Method 1: Try to use ActiveXObject (IE/Edge only)
+                    if (window.ActiveXObject || "ActiveXObject" in window) {
+                        var shell = new ActiveXObject("WScript.Shell");
+                        shell.Run(url, 1, false);
+                    } else {
+                        // Method 2: Try to use navigator.msLaunchUri (Edge)
+                        if (navigator.msLaunchUri) {
+                            navigator.msLaunchUri(url, function() {
+                                alert('Application launched successfully');
+                            }, function() {
+                                alert('Failed to launch application: ' + url);
+                            });
+                        } else {
+                            // Method 3: Try to use a custom protocol (if registered)
+                            window.location.href = url;
+                        }
+                    }
+                } catch (e) {
+                    alert('Cannot launch local applications from browser for security reasons.\n\n' +
+                          'This would work in a desktop application using:\n' +
+                          '- Electron\n' +
+                          '- Node.js with child_process\n' +
+                          '- Or a native application');
+                }
+            }
+        }
+
+        // System Information
+        function checkSystemInfo() {
+            // Simulate RAM check
+            const ramGB = Math.floor(Math.random() * 32) + 4;
+            document.getElementById('ram-info').textContent = `${ramGB} GB`;
+            
+            // Simulate processor info
+            const processors = ['Intel Core i5', 'Intel Core i7', 'AMD Ryzen 5', 'AMD Ryzen 7', 'Apple M1'];
+            const randomProcessor = processors[Math.floor(Math.random() * processors.length)];
+            document.getElementById('processor-info').textContent = randomProcessor;
+            
+            // Simulate network status
+            const isOnline = Math.random() > 0.1; // 90% chance of being online
+            const networkStatus = document.getElementById('network-status');
+            networkStatus.textContent = isOnline ? 'Connected' : 'Disconnected';
+            networkStatus.style.color = isOnline ? 'green' : 'red';
+        }
+    </script>
+</body>
+</html>
