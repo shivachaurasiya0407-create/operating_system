@@ -224,6 +224,39 @@
             color: #666;
             border-top: 1px solid var(--border-color);
         }
+
+        /* QR Code Section */
+        .qr-section {
+            text-align: center;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .qr-code-container {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .qr-instructions {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .qr-url {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -250,6 +283,20 @@
             <!-- Dashboard Section -->
             <section id="dashboard" class="section">
                 <h1>System Dashboard</h1>
+                
+                <!-- QR Code Section -->
+                <div class="qr-section">
+                    <h3>📱 Mobile Access</h3>
+                    <p class="qr-instructions">Scan this QR code to open the Operating System UI on your mobile device</p>
+                    <div id="qr-code-container" class="qr-code-container">
+                        <!-- QR code will be generated here -->
+                    </div>
+                    <p class="qr-url" id="current-url-display"></p>
+                    <p style="font-size: 0.85rem; color: #888; margin-top: 10px;">
+                        Tip: The UI is optimized for mobile viewing and all features work on your phone!
+                    </p>
+                </div>
+
                 <div class="dashboard-grid">
                     <div class="card">
                         <h3>Storage</h3>
@@ -435,7 +482,98 @@
             setInterval(updateTime, 1000);
             setupNavigation();
             checkSystemInfo();
+            startDataPolling();
         });
+
+        // Data polling for real-time updates from C++ program
+        function startDataPolling() {
+            setInterval(() => {
+                fetchUIData();
+                fetchStorageData();
+                fetchRAMData();
+            }, 3000); // Poll every 3 seconds
+        }
+
+        async function fetchUIData() {
+            try {
+                const response = await fetch('ui_data.json?' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    updateUIDisplay(data);
+                }
+            } catch (error) {
+                // File may not exist yet, ignore error
+            }
+        }
+
+        async function fetchStorageData() {
+            try {
+                const response = await fetch('storage_data.json?' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStorageDisplay(data);
+                }
+            } catch (error) {
+                // File may not exist yet, ignore error
+            }
+        }
+
+        async function fetchRAMData() {
+            try {
+                const response = await fetch('ram_data.json?' + new Date().getTime());
+                if (response.ok) {
+                    const data = await response.json();
+                    updateRAMDisplay(data);
+                }
+            } catch (error) {
+                // File may not exist yet, ignore error
+            }
+        }
+
+        function updateUIDisplay(data) {
+            if (data.username) {
+                document.getElementById('user-name').textContent = data.username;
+                document.getElementById('display-name').textContent = data.username;
+            }
+            if (data.browser_running !== undefined) {
+                const status = document.getElementById('network-status');
+                if (status) {
+                    status.textContent = data.browser_running ? 'UI Active' : 'UI Inactive';
+                    status.style.color = data.browser_running ? 'green' : 'red';
+                }
+            }
+        }
+
+        function updateStorageDisplay(data) {
+            const storageInfo = document.getElementById('storage-info');
+            if (storageInfo && data.total_gb) {
+                storageInfo.innerHTML = `
+                    <h4>Real-time Storage Information for ${data.drive}:</h4>
+                    <div class="status-item">
+                        <span>Total Capacity:</span>
+                        <span>${data.total_gb} GB</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Free Space:</span>
+                        <span>${data.free_gb} GB</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Available Space:</span>
+                        <span>${data.available_gb} GB</span>
+                    </div>
+                `;
+                storageInfo.style.display = 'block';
+                storageInfo.style.borderLeftColor = '#10b981';
+            }
+        }
+
+        function updateRAMDisplay(data) {
+            const ramInfo = document.getElementById('ram-info');
+            if (ramInfo && data.total_gb) {
+                ramInfo.textContent = `${data.total_gb} GB (Free: ${data.free_mb} MB)`;
+                ramInfo.style.color = '#10b981';
+            }
+        }
 
         // Navigation
         function setupNavigation() {
